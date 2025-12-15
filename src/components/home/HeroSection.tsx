@@ -2,82 +2,96 @@ import React from 'react';
 import { Link } from 'react-router-dom';
 import { useLanguage } from '@/contexts/LanguageContext';
 import { Button } from '@/components/ui/button';
-import { ArrowRight } from 'lucide-react';
+import { Sparkles, ShoppingBag, Crown } from 'lucide-react';
 
 const HeroSection: React.FC = () => {
   const { t, dir } = useLanguage();
 
   return (
-    <section className="relative min-h-[85vh] flex items-center justify-center overflow-hidden">
-      {/* Premium Background */}
+    <section className="relative min-h-[90vh] flex items-center overflow-hidden">
+      {/* Background Image - Hijabi Fashion Model */}
       <div className="absolute inset-0">
-        <div className="absolute inset-0 bg-gradient-to-b from-background via-background to-muted/30" />
-        <div className="absolute top-1/4 -left-1/4 w-[800px] h-[800px] rounded-full bg-gold/5 blur-[150px] animate-float" />
-        <div className="absolute bottom-1/4 -right-1/4 w-[600px] h-[600px] rounded-full bg-accent/5 blur-[120px] animate-float" style={{ animationDelay: '-3s' }} />
+        <img
+          src="https://images.unsplash.com/photo-1590073242678-70ee3fc28e8e?w=1920&h=1080&fit=crop&crop=faces"
+          alt="Elegant Hijabi Fashion"
+          className="w-full h-full object-cover object-top"
+        />
+        <div className="absolute inset-0 bg-gradient-to-r from-background/95 via-background/70 to-transparent" />
+        <div className="absolute inset-0 bg-gradient-to-t from-background via-transparent to-transparent" />
       </div>
 
-      {/* Decorative Lines */}
-      <div className="absolute inset-0 overflow-hidden pointer-events-none">
-        <div className="absolute top-[20%] left-0 w-full h-px bg-gradient-to-r from-transparent via-border to-transparent opacity-50" />
-        <div className="absolute top-[80%] left-0 w-full h-px bg-gradient-to-r from-transparent via-border to-transparent opacity-50" />
-      </div>
+      {/* Decorative Elements */}
+      <div className="absolute top-20 left-10 w-32 h-32 border border-gold/20 rounded-full animate-pulse-slow" />
+      <div className="absolute bottom-40 right-20 w-48 h-48 border border-gold/10 rounded-full animate-float" />
+      <div className="absolute top-1/3 right-1/4 w-2 h-2 bg-gold rounded-full animate-glow" />
 
       <div className="container relative z-10" dir={dir}>
-        <div className="flex flex-col items-center text-center space-y-12 max-w-4xl mx-auto">
-          {/* Tagline */}
-          <div className="animate-fade-in">
-            <span className="inline-block px-4 py-2 text-xs font-medium tracking-[0.3em] uppercase text-muted-foreground border border-border/50 rounded-full">
-              Premium Fashion
-            </span>
+        <div className="max-w-2xl space-y-8">
+          {/* Badge */}
+          <div className="animate-fade-in inline-flex items-center gap-2 px-4 py-2 rounded-full bg-gold/10 border border-gold/30">
+            <Crown className="w-4 h-4 text-gold" />
+            <span className="text-sm font-medium text-gold tracking-wide">Premium Collection</span>
           </div>
 
           {/* Title */}
-          <div className="space-y-4 animate-slide-up" style={{ animationDelay: '0.1s' }}>
-            <h1 className="text-5xl sm:text-6xl md:text-7xl lg:text-8xl font-display font-medium tracking-tight text-foreground leading-none">
+          <div className="space-y-4 animate-slide-up">
+            <h1 className="text-5xl sm:text-6xl md:text-7xl font-display font-bold tracking-tight text-foreground leading-tight">
               BOUTIQUE
+              <br />
+              <span className="text-gradient">MANCER</span>
             </h1>
-            <h1 className="text-5xl sm:text-6xl md:text-7xl lg:text-8xl font-display font-medium tracking-tight leading-none">
-              <span className="text-gold">MANCER</span>
-            </h1>
+            <p className="text-xl text-muted-foreground max-w-lg leading-relaxed">
+              اكتشفي أرقى تشكيلة من الأزياء العصرية والأناقة الفاخرة المصممة خصيصاً لك
+            </p>
           </div>
 
-          {/* Description */}
-          <p className="text-lg md:text-xl text-muted-foreground max-w-xl font-light leading-relaxed animate-slide-up" style={{ animationDelay: '0.2s' }}>
-            اكتشف أرقى تشكيلة من الأزياء العصرية والأناقة الفاخرة
-          </p>
-
           {/* CTA Buttons */}
-          <div className="flex flex-wrap gap-4 justify-center animate-slide-up" style={{ animationDelay: '0.3s' }}>
+          <div className="flex flex-wrap gap-4 animate-slide-up" style={{ animationDelay: '0.2s' }}>
             <Button
               asChild
               size="lg"
-              className="bg-foreground text-background hover:bg-foreground/90 font-medium px-8 h-14 text-base rounded-full transition-all duration-300 hover:shadow-premium group"
+              className="bg-gold hover:bg-gold-dark text-primary-foreground font-semibold px-8 h-14 text-base rounded-xl shadow-luxury transition-all duration-300 hover:shadow-xl hover:-translate-y-1 group"
             >
-              <Link to="/category/women">
+              <Link to="/category/women" className="flex items-center gap-2">
+                <ShoppingBag className="w-5 h-5" />
                 {t('women')}
-                <ArrowRight className="w-4 h-4 ml-2 group-hover:translate-x-1 transition-transform" />
+                <Sparkles className="w-4 h-4 opacity-0 group-hover:opacity-100 transition-opacity" />
               </Link>
             </Button>
             <Button
               asChild
               variant="outline"
               size="lg"
-              className="border-foreground/20 text-foreground hover:bg-foreground/5 font-medium px-8 h-14 text-base rounded-full transition-all duration-300"
+              className="border-2 border-foreground/20 text-foreground hover:bg-foreground hover:text-background font-semibold px-8 h-14 text-base rounded-xl transition-all duration-300 hover:shadow-lg"
             >
               <Link to="/category/men">
                 {t('men')}
               </Link>
             </Button>
           </div>
+
+          {/* Stats */}
+          <div className="flex gap-8 pt-8 animate-fade-in" style={{ animationDelay: '0.4s' }}>
+            <div className="text-center">
+              <p className="text-3xl font-display font-bold text-gold">500+</p>
+              <p className="text-sm text-muted-foreground">منتج متوفر</p>
+            </div>
+            <div className="w-px bg-border" />
+            <div className="text-center">
+              <p className="text-3xl font-display font-bold text-gold">100%</p>
+              <p className="text-sm text-muted-foreground">جودة عالية</p>
+            </div>
+            <div className="w-px bg-border" />
+            <div className="text-center">
+              <p className="text-3xl font-display font-bold text-gold">24/7</p>
+              <p className="text-sm text-muted-foreground">خدمة العملاء</p>
+            </div>
+          </div>
         </div>
       </div>
 
-      {/* Scroll Indicator */}
-      <div className="absolute bottom-8 left-1/2 -translate-x-1/2 animate-float">
-        <div className="w-6 h-10 border-2 border-muted-foreground/30 rounded-full flex justify-center pt-2">
-          <div className="w-1 h-2 bg-muted-foreground/50 rounded-full" />
-        </div>
-      </div>
+      {/* Bottom Wave */}
+      <div className="absolute bottom-0 left-0 right-0 h-24 bg-gradient-to-t from-background to-transparent" />
     </section>
   );
 };
