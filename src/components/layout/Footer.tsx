@@ -1,26 +1,71 @@
-import React from 'react';
+import React, { useState, useEffect } from 'react';
 import { Link } from 'react-router-dom';
 import { useLanguage } from '@/contexts/LanguageContext';
-import { Phone, Mail, MapPin, Instagram, Facebook } from 'lucide-react';
+import { useAuth } from '@/hooks/useAuth';
+import { Phone, MapPin, Instagram, Facebook, Edit2, Check, X } from 'lucide-react';
+import { supabase } from '@/integrations/supabase/client';
+import { Input } from '@/components/ui/input';
+import { Button } from '@/components/ui/button';
+import { toast } from 'sonner';
 
 const Footer: React.FC = () => {
-  const { t } = useLanguage();
+  const { t, dir } = useLanguage();
+  const { isAdmin } = useAuth();
   const currentYear = new Date().getFullYear();
+  const [copyrightText, setCopyrightText] = useState('BOUTIQUE MANCER');
+  const [isEditing, setIsEditing] = useState(false);
+  const [editValue, setEditValue] = useState(copyrightText);
+
+  useEffect(() => {
+    const fetchStoreName = async () => {
+      const { data } = await supabase
+        .from('store_settings')
+        .select('store_name')
+        .single();
+      
+      if (data?.store_name) {
+        setCopyrightText(data.store_name);
+        setEditValue(data.store_name);
+      }
+    };
+    fetchStoreName();
+  }, []);
+
+  const handleSave = async () => {
+    try {
+      const { data: existing } = await supabase
+        .from('store_settings')
+        .select('id')
+        .single();
+
+      if (existing) {
+        await supabase
+          .from('store_settings')
+          .update({ store_name: editValue })
+          .eq('id', existing.id);
+      } else {
+        await supabase
+          .from('store_settings')
+          .insert({ store_name: editValue });
+      }
+
+      setCopyrightText(editValue);
+      setIsEditing(false);
+      toast.success('تم حفظ التغييرات');
+    } catch (error) {
+      toast.error('حدث خطأ أثناء الحفظ');
+    }
+  };
 
   return (
-    <footer className="w-full border-t border-border/50 bg-secondary/30 mt-auto">
+    <footer className="w-full border-t border-border/50 bg-secondary/30 mt-auto" dir={dir}>
       <div className="container py-12">
         <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
           {/* Brand */}
           <div className="space-y-4">
-            <div className="flex items-center gap-3">
-              <div className="w-10 h-10 rounded-xl gradient-gold flex items-center justify-center">
-                <span className="text-lg font-display font-bold text-primary-foreground">B</span>
-              </div>
-              <span className="text-xl font-display font-bold">
-                BOUTIQUE <span className="text-gold">MANCER</span>
-              </span>
-            </div>
+            <span className="text-xl font-display font-bold">
+              BOUTIQUE <span className="text-gold">MANCER</span>
+            </span>
             <p className="text-muted-foreground text-sm leading-relaxed">
               أفضل متجر للأزياء العصرية والأناقة الفاخرة
             </p>
@@ -68,9 +113,35 @@ const Footer: React.FC = () => {
 
         {/* Copyright */}
         <div className="mt-10 pt-6 border-t border-border/50 text-center">
-          <p className="text-sm text-muted-foreground">
-            © {currentYear} BOUTIQUE MANCER. {t('copyright')}.
-          </p>
+          <div className="flex items-center justify-center gap-2">
+            {isEditing ? (
+              <div className="flex items-center gap-2">
+                <Input
+                  value={editValue}
+                  onChange={(e) => setEditValue(e.target.value)}
+                  className="max-w-xs h-8 text-sm text-center"
+                />
+                <Button size="icon" variant="ghost" className="h-8 w-8" onClick={handleSave}>
+                  <Check className="w-4 h-4 text-green-500" />
+                </Button>
+                <Button size="icon" variant="ghost" className="h-8 w-8" onClick={() => setIsEditing(false)}>
+                  <X className="w-4 h-4 text-destructive" />
+                </Button>
+              </div>
+            ) : (
+              <p className="text-sm text-muted-foreground flex items-center gap-2">
+                © {currentYear} {copyrightText}. {t('copyright')}.
+                {isAdmin && (
+                  <button
+                    onClick={() => setIsEditing(true)}
+                    className="p-1 hover:bg-secondary rounded-md transition-colors"
+                  >
+                    <Edit2 className="w-3.5 h-3.5" />
+                  </button>
+                )}
+              </p>
+            )}
+          </div>
         </div>
       </div>
     </footer>

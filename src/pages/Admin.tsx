@@ -40,12 +40,6 @@ const Admin: React.FC = () => {
   const [editingProduct, setEditingProduct] = useState<Product | null>(null);
   const [deleteConfirmId, setDeleteConfirmId] = useState<string | null>(null);
 
-  useEffect(() => {
-    if (!authLoading && !user) {
-      navigate('/auth');
-    }
-  }, [user, authLoading, navigate]);
-
   const getProductName = (product: Product) => {
     const names: Record<Language, string> = {
       ar: product.name_ar,
@@ -95,7 +89,7 @@ const Admin: React.FC = () => {
     );
   }
 
-  if (!isAdmin) {
+  if (!user || !isAdmin) {
     return (
       <Layout>
         <div className="container py-20" dir={dir}>
@@ -110,7 +104,7 @@ const Admin: React.FC = () => {
               <p className="text-muted-foreground mb-8 leading-relaxed">
                 عذراً، ليس لديك صلاحية للوصول إلى لوحة الإدارة.
                 <br />
-                يرجى التواصل مع المسؤول إذا كنت تعتقد أن هذا خطأ.
+                يرجى تسجيل الدخول بحساب الأدمن.
               </p>
               <Button
                 variant="outline"
