@@ -14,7 +14,170 @@ export type Database = {
   }
   public: {
     Tables: {
-      [_ in never]: never
+      orders: {
+        Row: {
+          created_at: string
+          customer_address: string | null
+          customer_location_lat: number | null
+          customer_location_lng: number | null
+          customer_name: string
+          customer_phone: string
+          id: string
+          product_id: string | null
+          quantity: number
+          selected_color: string | null
+          selected_size: string | null
+          status: string | null
+        }
+        Insert: {
+          created_at?: string
+          customer_address?: string | null
+          customer_location_lat?: number | null
+          customer_location_lng?: number | null
+          customer_name: string
+          customer_phone: string
+          id?: string
+          product_id?: string | null
+          quantity?: number
+          selected_color?: string | null
+          selected_size?: string | null
+          status?: string | null
+        }
+        Update: {
+          created_at?: string
+          customer_address?: string | null
+          customer_location_lat?: number | null
+          customer_location_lng?: number | null
+          customer_name?: string
+          customer_phone?: string
+          id?: string
+          product_id?: string | null
+          quantity?: number
+          selected_color?: string | null
+          selected_size?: string | null
+          status?: string | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "orders_product_id_fkey"
+            columns: ["product_id"]
+            isOneToOne: false
+            referencedRelation: "products"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      products: {
+        Row: {
+          address: string | null
+          category: string
+          colors: string[] | null
+          created_at: string
+          description_ar: string | null
+          description_ber: string | null
+          description_en: string | null
+          description_fr: string | null
+          id: string
+          images: string[] | null
+          is_featured: boolean | null
+          location_lat: number | null
+          location_lng: number | null
+          name_ar: string
+          name_ber: string
+          name_en: string
+          name_fr: string
+          phone: string | null
+          price: number
+          sizes: string[] | null
+          updated_at: string
+          whatsapp: string | null
+        }
+        Insert: {
+          address?: string | null
+          category: string
+          colors?: string[] | null
+          created_at?: string
+          description_ar?: string | null
+          description_ber?: string | null
+          description_en?: string | null
+          description_fr?: string | null
+          id?: string
+          images?: string[] | null
+          is_featured?: boolean | null
+          location_lat?: number | null
+          location_lng?: number | null
+          name_ar: string
+          name_ber: string
+          name_en: string
+          name_fr: string
+          phone?: string | null
+          price: number
+          sizes?: string[] | null
+          updated_at?: string
+          whatsapp?: string | null
+        }
+        Update: {
+          address?: string | null
+          category?: string
+          colors?: string[] | null
+          created_at?: string
+          description_ar?: string | null
+          description_ber?: string | null
+          description_en?: string | null
+          description_fr?: string | null
+          id?: string
+          images?: string[] | null
+          is_featured?: boolean | null
+          location_lat?: number | null
+          location_lng?: number | null
+          name_ar?: string
+          name_ber?: string
+          name_en?: string
+          name_fr?: string
+          phone?: string | null
+          price?: number
+          sizes?: string[] | null
+          updated_at?: string
+          whatsapp?: string | null
+        }
+        Relationships: []
+      }
+      store_settings: {
+        Row: {
+          address: string | null
+          created_at: string
+          id: string
+          location_lat: number | null
+          location_lng: number | null
+          phone: string | null
+          store_name: string | null
+          updated_at: string
+          whatsapp: string | null
+        }
+        Insert: {
+          address?: string | null
+          created_at?: string
+          id?: string
+          location_lat?: number | null
+          location_lng?: number | null
+          phone?: string | null
+          store_name?: string | null
+          updated_at?: string
+          whatsapp?: string | null
+        }
+        Update: {
+          address?: string | null
+          created_at?: string
+          id?: string
+          location_lat?: number | null
+          location_lng?: number | null
+          phone?: string | null
+          store_name?: string | null
+          updated_at?: string
+          whatsapp?: string | null
+        }
+        Relationships: []
+      }
     }
     Views: {
       [_ in never]: never
