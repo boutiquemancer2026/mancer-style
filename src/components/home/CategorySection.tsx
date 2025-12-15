@@ -1,78 +1,39 @@
 import React from 'react';
 import { Link } from 'react-router-dom';
 import { useLanguage } from '@/contexts/LanguageContext';
-import { User, Baby } from 'lucide-react';
-import { cn } from '@/lib/utils';
-
-const categories = [
-  {
-    id: 'men',
-    image: 'https://images.unsplash.com/photo-1617137968427-85924c800a22?w=600&h=800&fit=crop',
-    icon: User,
-  },
-  {
-    id: 'women',
-    image: 'https://images.unsplash.com/photo-1483985988355-763728e1935b?w=600&h=800&fit=crop',
-    icon: User,
-  },
-  {
-    id: 'children',
-    image: 'https://images.unsplash.com/photo-1622290291468-a28f7a7dc6a8?w=600&h=800&fit=crop',
-    icon: Baby,
-  },
-];
+import { Users, Baby, ArrowUpRight } from 'lucide-react';
 
 const CategorySection: React.FC = () => {
-  const { t } = useLanguage();
+  const { t, dir } = useLanguage();
 
-  const getCategoryLabel = (id: string) => {
-    switch (id) {
-      case 'men':
-        return t('men');
-      case 'women':
-        return t('women');
-      case 'children':
-        return t('children');
-      default:
-        return id;
-    }
-  };
+  const categories = [
+    { id: 'men', label: t('men'), icon: Users, description: 'تشكيلة راقية من الأزياء الرجالية العصرية', gradient: 'from-primary/80 to-primary' },
+    { id: 'women', label: t('women'), icon: Users, description: 'أحدث صيحات الموضة النسائية الأنيقة', gradient: 'from-gold/80 to-gold-dark' },
+    { id: 'children', label: t('children'), icon: Baby, description: 'ملابس مريحة وأنيقة للأطفال', gradient: 'from-accent/80 to-accent' },
+  ];
 
   return (
-    <section className="py-12">
+    <section className="py-20 bg-secondary/30" dir={dir}>
       <div className="container">
-        <h2 className="text-3xl font-display font-bold text-center mb-8 text-foreground">
-          {t('categories')}
-        </h2>
+        <div className="text-center mb-14">
+          <h2 className="text-4xl md:text-5xl font-display font-bold text-foreground mb-4">{t('categories')}</h2>
+          <p className="text-muted-foreground text-lg max-w-xl mx-auto">اختر القسم المناسب واستمتع بتجربة تسوق فريدة</p>
+        </div>
 
         <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
-          {categories.map((category, index) => {
+          {categories.map((category) => {
             const Icon = category.icon;
             return (
-              <Link
-                key={category.id}
-                to={`/category/${category.id}`}
-                className={cn(
-                  'group relative aspect-[3/4] overflow-hidden rounded-xl',
-                  'transition-all duration-500 hover:shadow-luxury hover:-translate-y-2',
-                  'animate-slide-up'
-                )}
-                style={{ animationDelay: `${index * 100}ms` }}
-              >
-                <img
-                  src={category.image}
-                  alt={getCategoryLabel(category.id)}
-                  className="w-full h-full object-cover transition-transform duration-700 group-hover:scale-110"
-                />
-                <div className="absolute inset-0 bg-gradient-to-t from-background/90 via-background/20 to-transparent" />
-                
-                <div className="absolute bottom-0 left-0 right-0 p-6 text-center">
-                  <div className="inline-flex items-center justify-center w-12 h-12 rounded-full bg-gold/20 backdrop-blur-sm mb-3 group-hover:scale-110 transition-transform">
-                    <Icon className="w-6 h-6 text-gold" />
-                  </div>
-                  <h3 className="text-xl font-display font-bold text-foreground group-hover:text-gold transition-colors">
-                    {getCategoryLabel(category.id)}
-                  </h3>
+              <Link key={category.id} to={`/category/${category.id}`} className="group relative overflow-hidden rounded-3xl bg-card border border-border/50 p-8 transition-all duration-500 hover:shadow-luxury hover:border-gold/30 hover:-translate-y-2">
+                <div className={`absolute inset-0 bg-gradient-to-br ${category.gradient} opacity-0 group-hover:opacity-5 transition-opacity duration-500`} />
+                <div className="w-16 h-16 rounded-2xl bg-secondary flex items-center justify-center mb-6 group-hover:scale-110 transition-transform duration-300">
+                  <Icon className="w-8 h-8 text-gold" />
+                </div>
+                <h3 className="text-2xl font-display font-bold text-foreground mb-3 group-hover:text-gold transition-colors">{category.label}</h3>
+                <p className="text-muted-foreground leading-relaxed mb-6">{category.description}</p>
+                <div className="flex items-center gap-2 text-gold font-medium">
+                  <span>تصفح الآن</span>
+                  <ArrowUpRight className="w-4 h-4 group-hover:translate-x-1 group-hover:-translate-y-1 transition-transform" />
                 </div>
               </Link>
             );

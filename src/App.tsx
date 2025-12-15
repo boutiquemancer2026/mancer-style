@@ -1,3 +1,5 @@
+import React, { useState, useCallback } from 'react';
+import SplashScreen from '@/components/SplashScreen';
 import { Toaster } from "@/components/ui/toaster";
 import { Toaster as Sonner } from "@/components/ui/sonner";
 import { TooltipProvider } from "@/components/ui/tooltip";
@@ -14,27 +16,36 @@ import NotFound from "./pages/NotFound";
 
 const queryClient = new QueryClient();
 
-const App = () => (
-  <QueryClientProvider client={queryClient}>
-    <LanguageProvider>
-      <ThemeProvider>
-        <TooltipProvider>
-          <Toaster />
-          <Sonner />
-          <BrowserRouter>
-            <Routes>
-              <Route path="/" element={<Index />} />
-              <Route path="/category/:category" element={<Category />} />
-              <Route path="/settings" element={<Settings />} />
-              <Route path="/admin" element={<Admin />} />
-              <Route path="/auth" element={<Auth />} />
-              <Route path="*" element={<NotFound />} />
-            </Routes>
-          </BrowserRouter>
-        </TooltipProvider>
-      </ThemeProvider>
-    </LanguageProvider>
-  </QueryClientProvider>
-);
+const App = () => {
+  const [showSplash, setShowSplash] = useState(true);
+
+  const handleSplashComplete = useCallback(() => {
+    setShowSplash(false);
+  }, []);
+
+  return (
+    <QueryClientProvider client={queryClient}>
+      <LanguageProvider>
+        <ThemeProvider>
+          <TooltipProvider>
+            {showSplash && <SplashScreen onComplete={handleSplashComplete} />}
+            <Toaster />
+            <Sonner />
+            <BrowserRouter>
+              <Routes>
+                <Route path="/" element={<Index />} />
+                <Route path="/category/:category" element={<Category />} />
+                <Route path="/settings" element={<Settings />} />
+                <Route path="/admin" element={<Admin />} />
+                <Route path="/auth" element={<Auth />} />
+                <Route path="*" element={<NotFound />} />
+              </Routes>
+            </BrowserRouter>
+          </TooltipProvider>
+        </ThemeProvider>
+      </LanguageProvider>
+    </QueryClientProvider>
+  );
+};
 
 export default App;
