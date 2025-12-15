@@ -21,22 +21,28 @@ import {
   SelectTrigger,
   SelectValue,
 } from '@/components/ui/select';
-import { Loader2, X, Plus } from 'lucide-react';
+import { Loader2, X, Plus, Image, Palette, Ruler } from 'lucide-react';
 
 const productSchema = z.object({
-  name_ar: z.string().min(1, 'Arabic name is required'),
-  name_fr: z.string().min(1, 'French name is required'),
-  name_en: z.string().min(1, 'English name is required'),
-  name_ber: z.string().min(1, 'Amazigh name is required'),
+  name_ar: z.string().optional(),
+  name_fr: z.string().optional(),
+  name_en: z.string().optional(),
+  name_ber: z.string().optional(),
   description_ar: z.string().optional(),
   description_fr: z.string().optional(),
   description_en: z.string().optional(),
   description_ber: z.string().optional(),
-  price: z.number().min(0, 'Price must be positive'),
+  price: z.number().min(0, 'السعر يجب أن يكون موجباً'),
   category: z.enum(['men', 'women', 'children']),
   phone: z.string().optional(),
   whatsapp: z.string().optional(),
   address: z.string().optional(),
+}).refine((data) => {
+  // At least one name is required
+  return data.name_ar || data.name_fr || data.name_en || data.name_ber;
+}, {
+  message: 'يجب إدخال اسم المنتج بلغة واحدة على الأقل',
+  path: ['name_ar'],
 });
 
 type ProductFormData = z.infer<typeof productSchema>;
@@ -79,16 +85,16 @@ const ProductFormModal: React.FC<ProductFormModalProps> = ({
   useEffect(() => {
     if (product) {
       reset({
-        name_ar: product.name_ar,
-        name_fr: product.name_fr,
-        name_en: product.name_en,
-        name_ber: product.name_ber,
+        name_ar: product.name_ar || '',
+        name_fr: product.name_fr || '',
+        name_en: product.name_en || '',
+        name_ber: product.name_ber || '',
         description_ar: product.description_ar || '',
         description_fr: product.description_fr || '',
         description_en: product.description_en || '',
         description_ber: product.description_ber || '',
         price: product.price,
-        category: product.category,
+        category: product.category as 'men' | 'women' | 'children',
         phone: product.phone || '',
         whatsapp: product.whatsapp || '',
         address: product.address || '',
@@ -113,10 +119,10 @@ const ProductFormModal: React.FC<ProductFormModalProps> = ({
 
   const onSubmit = async (data: ProductFormData) => {
     const productData = {
-      name_ar: data.name_ar,
-      name_fr: data.name_fr,
-      name_en: data.name_en,
-      name_ber: data.name_ber,
+      name_ar: data.name_ar || data.name_fr || data.name_en || data.name_ber || '',
+      name_fr: data.name_fr || data.name_ar || data.name_en || data.name_ber || '',
+      name_en: data.name_en || data.name_ar || data.name_fr || data.name_ber || '',
+      name_ber: data.name_ber || data.name_ar || data.name_fr || data.name_en || '',
       description_ar: data.description_ar || null,
       description_fr: data.description_fr || null,
       description_en: data.description_en || null,
@@ -179,86 +185,76 @@ const ProductFormModal: React.FC<ProductFormModalProps> = ({
 
   return (
     <Dialog open={isOpen} onOpenChange={(open) => !open && onClose()}>
-      <DialogContent className="max-w-2xl max-h-[90vh] overflow-y-auto" dir={dir}>
+      <DialogContent className="max-w-2xl max-h-[90vh] overflow-y-auto border-border/50" dir={dir}>
         <DialogHeader>
-          <DialogTitle className="font-display">
+          <DialogTitle className="font-display text-xl">
             {product ? t('editProduct') : t('addProduct')}
           </DialogTitle>
         </DialogHeader>
 
-        <form onSubmit={handleSubmit(onSubmit)} className="space-y-6">
-          {/* Names */}
-          <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-            <div className="space-y-2">
-              <Label>Name (Arabic) *</Label>
-              <Input {...register('name_ar')} dir="rtl" />
-              {errors.name_ar && (
-                <p className="text-sm text-destructive">{errors.name_ar.message}</p>
-              )}
+        <form onSubmit={handleSubmit(onSubmit)} className="space-y-6 pt-4">
+          {/* Names - Only one required */}
+          <div className="space-y-4">
+            <Label className="text-base font-medium">اسم المنتج (لغة واحدة كافية)</Label>
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+              <div className="space-y-2">
+                <Label className="text-sm text-muted-foreground">العربية</Label>
+                <Input {...register('name_ar')} dir="rtl" placeholder="اسم المنتج" />
+              </div>
+              <div className="space-y-2">
+                <Label className="text-sm text-muted-foreground">Français</Label>
+                <Input {...register('name_fr')} placeholder="Nom du produit" />
+              </div>
+              <div className="space-y-2">
+                <Label className="text-sm text-muted-foreground">English</Label>
+                <Input {...register('name_en')} placeholder="Product name" />
+              </div>
+              <div className="space-y-2">
+                <Label className="text-sm text-muted-foreground">ⵜⴰⵎⴰⵣⵉⵖⵜ</Label>
+                <Input {...register('name_ber')} placeholder="ⵉⵙⵎ ⵏ ⵓⴼⴰⵔⵉⵙ" />
+              </div>
             </div>
-            <div className="space-y-2">
-              <Label>Name (French) *</Label>
-              <Input {...register('name_fr')} />
-              {errors.name_fr && (
-                <p className="text-sm text-destructive">{errors.name_fr.message}</p>
-              )}
-            </div>
-            <div className="space-y-2">
-              <Label>Name (English) *</Label>
-              <Input {...register('name_en')} />
-              {errors.name_en && (
-                <p className="text-sm text-destructive">{errors.name_en.message}</p>
-              )}
-            </div>
-            <div className="space-y-2">
-              <Label>Name (Amazigh) *</Label>
-              <Input {...register('name_ber')} />
-              {errors.name_ber && (
-                <p className="text-sm text-destructive">{errors.name_ber.message}</p>
-              )}
-            </div>
+            {errors.name_ar && (
+              <p className="text-sm text-destructive">{errors.name_ar.message}</p>
+            )}
           </div>
 
           {/* Descriptions */}
-          <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-            <div className="space-y-2">
-              <Label>Description (Arabic)</Label>
-              <Textarea {...register('description_ar')} dir="rtl" rows={2} />
-            </div>
-            <div className="space-y-2">
-              <Label>Description (French)</Label>
-              <Textarea {...register('description_fr')} rows={2} />
-            </div>
-            <div className="space-y-2">
-              <Label>Description (English)</Label>
-              <Textarea {...register('description_en')} rows={2} />
-            </div>
-            <div className="space-y-2">
-              <Label>Description (Amazigh)</Label>
-              <Textarea {...register('description_ber')} rows={2} />
+          <div className="space-y-4">
+            <Label className="text-base font-medium">الوصف (اختياري)</Label>
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+              <div className="space-y-2">
+                <Label className="text-sm text-muted-foreground">العربية</Label>
+                <Textarea {...register('description_ar')} dir="rtl" rows={2} placeholder="وصف المنتج" />
+              </div>
+              <div className="space-y-2">
+                <Label className="text-sm text-muted-foreground">Français</Label>
+                <Textarea {...register('description_fr')} rows={2} placeholder="Description" />
+              </div>
             </div>
           </div>
 
           {/* Price & Category */}
           <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
             <div className="space-y-2">
-              <Label>{t('price')} (DA) *</Label>
+              <Label className="text-base font-medium">{t('price')} (DA)</Label>
               <Input
                 type="number"
                 step="0.01"
                 {...register('price', { valueAsNumber: true })}
+                className="h-12"
               />
               {errors.price && (
                 <p className="text-sm text-destructive">{errors.price.message}</p>
               )}
             </div>
             <div className="space-y-2">
-              <Label>{t('productCategory')} *</Label>
+              <Label className="text-base font-medium">{t('productCategory')}</Label>
               <Select
                 defaultValue={product?.category || 'men'}
                 onValueChange={(value) => setValue('category', value as 'men' | 'women' | 'children')}
               >
-                <SelectTrigger>
+                <SelectTrigger className="h-12">
                   <SelectValue />
                 </SelectTrigger>
                 <SelectContent>
@@ -271,30 +267,34 @@ const ProductFormModal: React.FC<ProductFormModalProps> = ({
           </div>
 
           {/* Images */}
-          <div className="space-y-2">
-            <Label>{t('productImages')}</Label>
+          <div className="space-y-3">
+            <Label className="text-base font-medium flex items-center gap-2">
+              <Image className="w-4 h-4" />
+              {t('productImages')}
+            </Label>
             <div className="flex gap-2">
               <Input
-                placeholder="Image URL"
+                placeholder="رابط الصورة"
                 value={newImage}
                 onChange={(e) => setNewImage(e.target.value)}
+                className="flex-1"
               />
-              <Button type="button" variant="outline" onClick={addImage}>
+              <Button type="button" variant="outline" onClick={addImage} className="shrink-0">
                 <Plus className="w-4 h-4" />
               </Button>
             </div>
-            <div className="flex flex-wrap gap-2 mt-2">
+            <div className="flex flex-wrap gap-3">
               {images.map((image, index) => (
                 <div key={index} className="relative group">
                   <img
                     src={image}
                     alt=""
-                    className="w-16 h-16 object-cover rounded-lg"
+                    className="w-20 h-20 object-cover rounded-lg border border-border"
                   />
                   <button
                     type="button"
                     onClick={() => removeImage(index)}
-                    className="absolute -top-2 -right-2 w-5 h-5 bg-destructive text-destructive-foreground rounded-full flex items-center justify-center opacity-0 group-hover:opacity-100 transition-opacity"
+                    className="absolute -top-2 -right-2 w-6 h-6 bg-destructive text-destructive-foreground rounded-full flex items-center justify-center opacity-0 group-hover:opacity-100 transition-opacity shadow-lg"
                   >
                     <X className="w-3 h-3" />
                   </button>
@@ -304,30 +304,33 @@ const ProductFormModal: React.FC<ProductFormModalProps> = ({
           </div>
 
           {/* Colors */}
-          <div className="space-y-2">
-            <Label>{t('colors')}</Label>
-            <div className="flex gap-2">
+          <div className="space-y-3">
+            <Label className="text-base font-medium flex items-center gap-2">
+              <Palette className="w-4 h-4" />
+              {t('colors')}
+            </Label>
+            <div className="flex gap-2 items-center">
               <Input
                 type="color"
                 value={newColor}
                 onChange={(e) => setNewColor(e.target.value)}
-                className="w-20 h-10 p-1"
+                className="w-16 h-12 p-1 cursor-pointer"
               />
-              <Button type="button" variant="outline" onClick={addColor}>
+              <Button type="button" variant="outline" onClick={addColor} className="shrink-0">
                 <Plus className="w-4 h-4" />
               </Button>
             </div>
-            <div className="flex flex-wrap gap-2 mt-2">
+            <div className="flex flex-wrap gap-2">
               {colors.map((color, index) => (
                 <div key={index} className="relative group">
                   <div
-                    className="w-8 h-8 rounded-full border-2 border-border"
+                    className="w-10 h-10 rounded-full border-2 border-border shadow-sm cursor-pointer"
                     style={{ backgroundColor: color }}
                   />
                   <button
                     type="button"
                     onClick={() => removeColor(index)}
-                    className="absolute -top-2 -right-2 w-5 h-5 bg-destructive text-destructive-foreground rounded-full flex items-center justify-center opacity-0 group-hover:opacity-100 transition-opacity"
+                    className="absolute -top-1 -right-1 w-5 h-5 bg-destructive text-destructive-foreground rounded-full flex items-center justify-center opacity-0 group-hover:opacity-100 transition-opacity"
                   >
                     <X className="w-3 h-3" />
                   </button>
@@ -337,28 +340,32 @@ const ProductFormModal: React.FC<ProductFormModalProps> = ({
           </div>
 
           {/* Sizes */}
-          <div className="space-y-2">
-            <Label>{t('sizes')}</Label>
+          <div className="space-y-3">
+            <Label className="text-base font-medium flex items-center gap-2">
+              <Ruler className="w-4 h-4" />
+              {t('sizes')}
+            </Label>
             <div className="flex gap-2">
               <Input
-                placeholder="e.g., S, M, L, XL"
+                placeholder="S, M, L, XL..."
                 value={newSize}
                 onChange={(e) => setNewSize(e.target.value)}
+                className="flex-1"
               />
-              <Button type="button" variant="outline" onClick={addSize}>
+              <Button type="button" variant="outline" onClick={addSize} className="shrink-0">
                 <Plus className="w-4 h-4" />
               </Button>
             </div>
-            <div className="flex flex-wrap gap-2 mt-2">
+            <div className="flex flex-wrap gap-2">
               {sizes.map((size, index) => (
                 <div key={index} className="relative group">
-                  <span className="px-3 py-1 bg-secondary rounded-full text-sm">
+                  <span className="inline-flex items-center justify-center px-4 py-2 bg-secondary text-secondary-foreground rounded-full text-sm font-medium">
                     {size}
                   </span>
                   <button
                     type="button"
                     onClick={() => removeSize(index)}
-                    className="absolute -top-2 -right-2 w-5 h-5 bg-destructive text-destructive-foreground rounded-full flex items-center justify-center opacity-0 group-hover:opacity-100 transition-opacity"
+                    className="absolute -top-1 -right-1 w-5 h-5 bg-destructive text-destructive-foreground rounded-full flex items-center justify-center opacity-0 group-hover:opacity-100 transition-opacity"
                   >
                     <X className="w-3 h-3" />
                   </button>
@@ -370,29 +377,29 @@ const ProductFormModal: React.FC<ProductFormModalProps> = ({
           {/* Contact */}
           <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
             <div className="space-y-2">
-              <Label>Phone</Label>
+              <Label>الهاتف</Label>
               <Input {...register('phone')} placeholder="+213..." />
             </div>
             <div className="space-y-2">
-              <Label>WhatsApp</Label>
+              <Label>واتساب</Label>
               <Input {...register('whatsapp')} placeholder="+213..." />
             </div>
           </div>
 
           {/* Address */}
           <div className="space-y-2">
-            <Label>Address</Label>
-            <Textarea {...register('address')} rows={2} />
+            <Label>العنوان</Label>
+            <Textarea {...register('address')} rows={2} placeholder="عنوان المتجر" />
           </div>
 
           {/* Actions */}
-          <div className="flex gap-4 justify-end">
-            <Button type="button" variant="outline" onClick={onClose}>
+          <div className="flex gap-4 justify-end pt-4 border-t border-border">
+            <Button type="button" variant="outline" onClick={onClose} className="px-6">
               {t('cancel')}
             </Button>
             <Button
               type="submit"
-              className="gradient-gold text-background"
+              className="bg-primary text-primary-foreground px-8"
               disabled={isSubmitting}
             >
               {isSubmitting ? (
