@@ -23,6 +23,7 @@ export interface Product {
   location_lng: number | null;
   address: string | null;
   is_featured: boolean;
+  is_offer: boolean;
   created_at: string;
   updated_at: string;
 }
@@ -64,6 +65,25 @@ export const useFeaturedProducts = () => {
   });
 };
 
+export const useSearchProducts = (searchTerm: string) => {
+  return useQuery({
+    queryKey: ['products', 'search', searchTerm],
+    queryFn: async () => {
+      if (!searchTerm.trim()) return [];
+      
+      const { data, error } = await supabase
+        .from('products')
+        .select('*')
+        .or(`name_ar.ilike.%${searchTerm}%,name_fr.ilike.%${searchTerm}%,name_en.ilike.%${searchTerm}%,name_ber.ilike.%${searchTerm}%`)
+        .order('name_ar', { ascending: true });
+      
+      if (error) throw error;
+      return data as Product[];
+    },
+    enabled: searchTerm.trim().length > 0,
+  });
+};
+
 export const useProduct = (id: string) => {
   return useQuery({
     queryKey: ['product', id],
@@ -99,12 +119,12 @@ export const useCreateProduct = () => {
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ['products'] });
       toast({
-        title: 'Product created successfully',
+        title: 'تم إضافة المنتج بنجاح',
       });
     },
     onError: (error) => {
       toast({
-        title: 'Error creating product',
+        title: 'خطأ في إضافة المنتج',
         description: error.message,
         variant: 'destructive',
       });
@@ -131,12 +151,12 @@ export const useUpdateProduct = () => {
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ['products'] });
       toast({
-        title: 'Product updated successfully',
+        title: 'تم تحديث المنتج بنجاح',
       });
     },
     onError: (error) => {
       toast({
-        title: 'Error updating product',
+        title: 'خطأ في تحديث المنتج',
         description: error.message,
         variant: 'destructive',
       });
@@ -160,12 +180,12 @@ export const useDeleteProduct = () => {
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ['products'] });
       toast({
-        title: 'Product deleted successfully',
+        title: 'تم حذف المنتج بنجاح',
       });
     },
     onError: (error) => {
       toast({
-        title: 'Error deleting product',
+        title: 'خطأ في حذف المنتج',
         description: error.message,
         variant: 'destructive',
       });

@@ -80,6 +80,7 @@ export type Database = {
           id: string
           images: string[] | null
           is_featured: boolean | null
+          is_offer: boolean | null
           location_lat: number | null
           location_lng: number | null
           name_ar: string
@@ -104,6 +105,7 @@ export type Database = {
           id?: string
           images?: string[] | null
           is_featured?: boolean | null
+          is_offer?: boolean | null
           location_lat?: number | null
           location_lng?: number | null
           name_ar: string
@@ -128,6 +130,7 @@ export type Database = {
           id?: string
           images?: string[] | null
           is_featured?: boolean | null
+          is_offer?: boolean | null
           location_lat?: number | null
           location_lng?: number | null
           name_ar?: string
